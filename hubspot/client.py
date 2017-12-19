@@ -24,8 +24,8 @@ class Client(object):
     def _get(self, endpoint, params=None):
         return self._request('GET', endpoint, params=params)
 
-    def _post(self, endpoint, json=None):
-        return self._request('POST', endpoint, json=json)
+    def _post(self, endpoint, json=None, aditional_data=None):
+        return self._request('POST', endpoint, json=json, aditional_data=aditional_data)
 
     def _delete(self, endpoint):
         return self._request('DELETE', endpoint)
@@ -34,8 +34,7 @@ class Client(object):
         headers = {'Authorization': 'Bearer {0}'.format(self._access_token),
                    }
         if aditional_data is not None:
-            for k, v in aditional_data.items():
-                headers[k] = v
+            headers = aditional_data
         response = requests.request(method, self._base_url + endpoint, headers=headers, json=json, params=params)
         return self._parse(response)
 
