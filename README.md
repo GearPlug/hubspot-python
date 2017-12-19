@@ -33,11 +33,11 @@ Delete Contact:
 Client.contacts.delete_contact()
 ```
 
-##TODO
+## TODO
 
-###CalendarAPI
+### CalendarAPI
 
-###Companies
+### Companies
 
 - Update_company
 - Get a company
@@ -46,18 +46,18 @@ Client.contacts.delete_contact()
 - Add contact to company
 - Remove contact from a company
 
-###Contacts
+### Contacts
 
 - Update a contact
 - Create or update a group of contacts
 - Get contact by email
 - Get a group of contacts by email
 
-###COS
+### COS
 
-###CRM Extensions API
+### CRM Extensions API
 
-###Deals
+### Deals
 
 - Update a Deal
 - Update a Deal
