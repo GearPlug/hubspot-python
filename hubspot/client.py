@@ -59,7 +59,7 @@ class Client(object):
             raise KeyError('The refresh token must have a redirect_uri')
         if 'refresh_token' not in data:
             raise KeyError('The refresh token must have a refresh_token')
-        data['grant_type':'refresh_token']
+        data['grant_type'] = 'refresh_token'
         aditional_data = {'Content-Type': 'application/x-www-form-urlencoded',
                           'charset': 'utf-8'}
         return self._post(endpoint=endpoint, data=data, aditional_data=aditional_data)
