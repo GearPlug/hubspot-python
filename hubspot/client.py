@@ -24,8 +24,8 @@ class Client(object):
     def _get(self, endpoint, params=None):
         return self._request('GET', endpoint, params=params)
 
-    def _post(self, endpoint, json=None, aditional_data=None):
-        return self._request('POST', endpoint, json=json, aditional_data=aditional_data)
+    def _post(self, endpoint, json=None, aditional_data=None, params=None):
+        return self._request('POST', endpoint, json=json, aditional_data=aditional_data, params=params)
 
     def _delete(self, endpoint):
         return self._request('DELETE', endpoint)
@@ -62,7 +62,7 @@ class Client(object):
         data['grant_type'] = 'refresh_token'
         aditional_data = {'Content-Type': 'application/x-www-form-urlencoded',
                           'charset': 'utf-8'}
-        return self._post(endpoint=endpoint, data=data, aditional_data=aditional_data)
+        return self._post(endpoint=endpoint, params=data, aditional_data=aditional_data)
 
     def _parse(self, response):
         if not response.ok:
