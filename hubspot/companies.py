@@ -30,4 +30,9 @@ class Companies(object):
         endpoint = "/companies/{0}".format(company_id)
         return self._client._delete(endpoint=self._base_url_companies+endpoint)
 
+    def get_recently_created_companies(self, limit):
+        endpoint = "/companies/recent/created"
+        params = {'count': limit}
+        return self._client._get(endpoint=self._base_url_companies+endpoint, params=params)
+
 

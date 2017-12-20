@@ -30,5 +30,8 @@ class Contacts(object):
         endpoint = "/contact/vid/{0}".format(contact_id)
         return self._client._delete(endpoint=self._base_url_contacts+endpoint)
 
-
+    def get_recently_created_contacts(self, limit):
+        endpoint = "/lists/all/contacts/recent"
+        params = {'count': limit}
+        return self._client._get(endpoint=self._base_url_contacts+endpoint, params=params)
 

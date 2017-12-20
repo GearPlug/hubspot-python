@@ -34,3 +34,8 @@ class Deals(object):
     def delete_deal(self, deal_id):
         endpoint = "/deal/{0}".format(deal_id)
         return self._client._delete(endpoint=self._base_url_deals+endpoint)
+
+    def get_recently_created_deals(self, limit):
+        endpoint = "/deal/recent/created"
+        params = {'count': limit}
+        return self._client._get(endpoint=self._base_url_deals+endpoint, params=params)
