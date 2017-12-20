@@ -37,6 +37,16 @@ class ContactsTest(TestCase):
         self.assertIsNotNone(_id)
         self.client.contacts.delete_contact(result_create['vid'])
 
+    def test_get_contact(self):
+        result_create = self.client.contacts.create_contact(data={'email': 'grplugtest2@gmail.com'}).json()
+        try:
+            self.client.contacts.get_contact(result_create['vid'])
+            find = True
+        except:
+            find = False
+        self.assertTrue(find)
+        self.client.contacts.delete_contact(result_create['vid'])
+
 
 
 

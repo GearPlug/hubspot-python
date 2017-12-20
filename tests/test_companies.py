@@ -36,3 +36,13 @@ class CompaniesTest(TestCase):
             _id = _company['results'][0]['companyId']
         self.assertIsNotNone(_id)
         self.client.companies.delete_company(result_create['companyId'])
+
+    def test_get_company(self):
+        result_create = self.client.companies.create_company(data={'name':'my company'}).json()
+        try:
+            self.client.companies.get_company(result_create['companyId'])
+            find = True
+        except:
+            find = False
+        self.assertTrue(find)
+        self.client.companies.delete_company(result_create['companyId'])

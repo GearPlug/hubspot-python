@@ -35,3 +35,6 @@ class Contacts(object):
         params = {'count': limit}
         return self._client._get(endpoint=self._base_url_contacts+endpoint, params=params)
 
+    def get_contact(self, contact_id):
+        endpoint = "/contact/vid/{0}/profile".format(contact_id)
+        return self._client._get(endpoint=self._base_url_contacts + endpoint)

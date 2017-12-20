@@ -32,7 +32,17 @@ class DealsTest(TestCase):
         _id = None
         time.sleep(10)
         _deal = self.client.deals.get_recently_created_deals(1).json()
-        if _deal['deals'][0]['dealId'] == result_create['dealId']:
-            _id = _deal['deals'][0]['dealId']
+        if _deal['results'][0]['dealId'] == result_create['dealId']:
+            _id = _deal['results'][0]['dealId']
         self.assertIsNotNone(_id)
+        self.client.deals.delete_deal(result_create['dealId'])
+
+    def test_get_deal(self):
+        result_create = self.client.deals.create_deal(data={'dealname': 'mydealtest'}).json()
+        try:
+            self.client.deals.get_deal(result_create['dealId'])
+            find = True
+        except:
+            find = False
+        self.assertTrue(find)
         self.client.deals.delete_deal(result_create['dealId'])

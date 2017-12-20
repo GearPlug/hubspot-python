@@ -40,7 +40,6 @@ Client.contacts.delete_contact()
 ### Companies
 
 - Update_company
-- Get a company
 - Get contacts of a company
 - Get contacts IDs of a company
 - Add contact to company
@@ -61,7 +60,6 @@ Client.contacts.delete_contact()
 
 - Update a Deal
 - Update a Deal
-- Get a Deal
 - Associate a Deal
 - Remove association of deal
 - Get associated deals

@@ -39,3 +39,7 @@ class Deals(object):
         endpoint = "/deal/recent/created"
         params = {'count': limit}
         return self._client._get(endpoint=self._base_url_deals+endpoint, params=params)
+
+    def get_deal(self, deal_id):
+        endpoint = "/deal/{0}".format(deal_id)
+        return self._client._get(endpoint=self._base_url_deals+endpoint)

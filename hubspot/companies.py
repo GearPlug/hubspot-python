@@ -35,4 +35,10 @@ class Companies(object):
         params = {'count': limit}
         return self._client._get(endpoint=self._base_url_companies+endpoint, params=params)
 
+    def get_company(self, company_id):
+        endpoint = "/companies/{0}".format(company_id)
+        return self._client._get(endpoint=self._base_url_companies+endpoint)
+
+
+
 
