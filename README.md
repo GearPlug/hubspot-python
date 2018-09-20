@@ -4,7 +4,7 @@ HubSpot API wrapper written in Python.
 ### Installing
 
 ```
-pip install git+git://github.com/GearPlug/hubspot-python.git
+pip install hubspot-python
 ```
 
 ## Requirements
