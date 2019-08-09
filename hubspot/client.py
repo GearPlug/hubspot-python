@@ -14,8 +14,9 @@ from urllib.parse import urlencode, urlparse
 class Client(object):
     BASE_URL = "https://api.hubapi.com/"
 
-    def __init__(self, app_id, client_id, client_secret):
+    def __init__(self, app_id, hapikey, client_id, client_secret):
         self.app_id = app_id
+        self.hapikey = hapikey
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = None
@@ -72,14 +73,13 @@ class Client(object):
     def _delete(self, endpoint, **kwargs):
         return self._request('DELETE', endpoint, **kwargs)
 
-    def _request(self, method, endpoint, headers=None, **kwargs):
-        _headers = {
-            'Authorization':  'Bearer {0}'.format(self.access_token)
-        }
+    def _request(self, method, endpoint, headers=None, params=None, **kwargs):
+        _headers = {}
+        if 'hapikey' not in params:
+            _headers['Authorization'] = 'Bearer {0}'.format(self.access_token)
         if headers:
             _headers.update(headers)
-        print(_headers)
-        return self._parse(requests.request(method, self.BASE_URL + endpoint, headers=_headers, **kwargs))
+        return self._parse(requests.request(method, self.BASE_URL + endpoint, headers=_headers, params=params, **kwargs))
 
     def _parse(self, response):
         if 'application/json' in response.headers['Content-Type']:
