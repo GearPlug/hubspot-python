@@ -1,44 +1,27 @@
-"""
-The contacts module provides functionality for working with companies in your
-HubSpot account.
-Documentation: https://developers.hubspot.com
-"""
-
 class Companies(object):
+    BASE_URL = "companies/v2"
+
     def __init__(self, client):
         self._client = client
-        self._base_url_companies = "companies/v2"
 
-    def get_companies(self):
-        endpoint = "/companies/"
-        return self._client._get(endpoint=self._base_url_companies+endpoint)
+    def get_companies(self, **params):
+        endpoint = "/companies/paged"
+        return self._client._get(self.BASE_URL + endpoint, params=params)
 
     def create_company(self, data):
-        """
-        Create a new company in your HubSpot CRM
-        :param data: A dictionary
-        :return: A json
-        """
         endpoint = "/companies/"
-        if 'name' not in data:
-            raise KeyError('The company must have a name')
-        else:
-            json = {"properties": [{"name": k, "value": v} for k, v in data.items()]}
-            return self._client._post(endpoint=self._base_url_companies + endpoint, json=json)
+        data = {"properties": [{"name": k, "value": v}
+                               for k, v in data.items()]}
+        return self._client._post(self.BASE_URL + endpoint, json=data)
 
     def delete_company(self, company_id):
         endpoint = "/companies/{0}".format(company_id)
-        return self._client._delete(endpoint=self._base_url_companies+endpoint)
+        return self._client._delete(self.BASE_URL + endpoint)
 
-    def get_recently_created_companies(self, limit):
+    def get_recently_created_companies(self, **params):
         endpoint = "/companies/recent/created"
-        params = {'count': limit}
-        return self._client._get(endpoint=self._base_url_companies+endpoint, params=params)
+        return self._client._get(self.BASE_URL + endpoint, params=params)
 
-    def get_company(self, company_id):
+    def get_company(self, company_id, **params):
         endpoint = "/companies/{0}".format(company_id)
-        return self._client._get(endpoint=self._base_url_companies+endpoint)
-
-
-
-
+        return self._client._get(self.BASE_URL + endpoint, params=params)

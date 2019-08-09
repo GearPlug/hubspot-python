@@ -1,102 +1,90 @@
 import requests
-from .contacts import Contacts
-from .companies import Companies
-from .deals import Deals
-from .fields import Fields
+
+from hubspot.contact_lists import ContactLists
+from hubspot.contacts import Contacts
+from hubspot.companies import Companies
+from hubspot.deals import Deals
+from hubspot.fields import Fields
 from hubspot.enumerator import ErrorEnum
 from hubspot import exception
-
-"""
-The client module is responsible for abstracting away connecting to, making
-requests to, and serializing responses from the HubSpot API.
-"""
+from hubspot.webhooks import Webhooks
+from urllib.parse import urlencode, urlparse
 
 
 class Client(object):
-    def __init__(self, access_token):
-        self._base_url = "https://api.hubapi.com/"
-        self._access_token = access_token
-        self.contacts = Contacts(self)
-        self.companies = Companies(self)
+    BASE_URL = "https://api.hubapi.com/"
+
+    def __init__(self, app_id, client_id, client_secret):
+        self.app_id = app_id
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.access_token = None
+
         self.deals = Deals(self)
+        self.companies = Companies(self)
+        self.contact_lists = ContactLists(self)
+        self.contacts = Contacts(self)
         self.fields = Fields(self)
+        self.webhooks = Webhooks(self)
 
-    def _get(self, endpoint, params=None):
-        return self._request('GET', endpoint, params=params)
-
-    def _post(self, endpoint, json=None, aditional_data=None, params=None):
-        return self._request('POST', endpoint, json=json, aditional_data=aditional_data, params=params)
-
-    def _delete(self, endpoint):
-        return self._request('DELETE', endpoint)
-
-    def _request(self, method, endpoint, json=None, params=None, aditional_data=None):
-        headers = {'Authorization': 'Bearer {0}'.format(self._access_token),
-                   }
-        if aditional_data is not None:
-            headers = aditional_data
-        response = requests.request(method, self._base_url + endpoint, headers=headers, json=json, params=params)
-        return self._parse(response)
-
-    def get_refresh_token(self, data):
-        """
-        Refresh a token
-        :param data: A dictionary with the parameters
-        data = {
-            "client_id": String
-            "client_secret": String
-            "redirect_uri": String
-            "refresh_token": Sting
+    def authorization_url(self, redirect_uri, scope):
+        if not isinstance(scope, list):
+            raise Exception('scope must be a list.')
+        params = {
+            'client_id': self.client_id,
+            'redirect_uri': redirect_uri,
+            'scope': ' '.join(scope)
         }
-        :return: A json
-        """
-        endpoint = "oauth/v1/token"
-        if 'client_id' not in data:
-            raise KeyError('The refresh token must have a client_id')
-        if 'client_secret' not in data:
-            raise KeyError('The refresh token must have a client_secret')
-        if 'redirect_uri' not in data:
-            raise KeyError('The refresh token must have a redirect_uri')
-        if 'refresh_token' not in data:
-            raise KeyError('The refresh token must have a refresh_token')
-        data['grant_type'] = 'refresh_token'
-        aditional_data = {'Content-Type': 'application/x-www-form-urlencoded',
-                          'charset': 'utf-8'}
-        return self._post(endpoint=endpoint, params=data, aditional_data=aditional_data)
+        url = 'https://app.hubspot.com/oauth/authorize?' + urlencode(params)
+        return url
+
+    def exchange_code(self, redirect_uri, code):
+        data = {
+            'grant_type': 'authorization_code',
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'redirect_uri': redirect_uri,
+            'code': code
+        }
+        return self._post('oauth/v1/token', data=data)
+
+    def refresh_token(self, refresh_token):
+        data = {
+            'grant_type': 'refresh_token',
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'refresh_token': refresh_token
+        }
+        return self._post('oauth/v1/token', data=data)
+
+    def set_access_token(self, access_token):
+        self.access_token = access_token
+
+    def _get(self, endpoint, **kwargs):
+        return self._request('GET', endpoint, **kwargs)
+
+    def _post(self, endpoint, **kwargs):
+        return self._request('POST', endpoint, **kwargs)
+
+    def _put(self, endpoint, **kwargs):
+        return self._request('PUT', endpoint, **kwargs)
+
+    def _delete(self, endpoint, **kwargs):
+        return self._request('DELETE', endpoint, **kwargs)
+
+    def _request(self, method, endpoint, headers=None, **kwargs):
+        _headers = {
+            'Authorization':  'Bearer {0}'.format(self.access_token)
+        }
+        if headers:
+            _headers.update(headers)
+        print(_headers)
+        return self._parse(requests.request(method, self.BASE_URL + endpoint, headers=_headers, **kwargs))
 
     def _parse(self, response):
-        if not response.ok:
-            try:
-                data = response.json()
-                if 'message' in data:
-                    code = response.status_code
-                    message = data['message']
-                else:
-                    message = ""
-                    code = response.status_code
-            except:
-                message = ""
-                code = response.status_code
-            try:
-                error_enum = ErrorEnum(code)
-            except Exception:
-                raise exception.UnexpectedError('Error {0} . Message{1}'.format(code, message))
-            if error_enum == ErrorEnum.Unauthorized:
-                raise exception.Unauthorized(message)
-            elif error_enum == ErrorEnum.Forbidden:
-                raise exception.Forbidden(message)
-            elif error_enum == ErrorEnum.TooManyRequests:
-                raise exception.TooManyRequests(message)
-            elif error_enum == ErrorEnum.Timeouts_1:
-                raise exception.Timeouts_1(message)
-            elif error_enum == ErrorEnum.Timeouts_2:
-                raise exception.Timeouts_2(message)
-            elif error_enum == ErrorEnum.NotFound:
-                raise exception.NotFound(message)
-            elif error_enum == ErrorEnum.MethodNotAllowed:
-                raise exception.MethodNotAllowed(message)
-            else:
-                raise exception.BaseError('Error {0} . Message{1}'.format(code, message))
-            return data
+        if 'application/json' in response.headers['Content-Type']:
+            r = response.json()
         else:
-            return response
+            return response.text
+
+        return r
