@@ -1,12 +1,13 @@
 import requests
 
+from hubspot import exceptions
+from hubspot.enums import ErrorEnum
 from hubspot.contact_lists import ContactLists
 from hubspot.contacts import Contacts
 from hubspot.companies import Companies
 from hubspot.deals import Deals
 from hubspot.fields import Fields
-from hubspot.enumerator import ErrorEnum
-from hubspot import exception
+from hubspot.integrations import Integrations
 from hubspot.webhooks import Webhooks
 from urllib.parse import urlencode, urlparse
 
@@ -26,6 +27,7 @@ class Client(object):
         self.contact_lists = ContactLists(self)
         self.contacts = Contacts(self)
         self.fields = Fields(self)
+        self.integrations = Integrations(self)
         self.webhooks = Webhooks(self)
 
     def authorization_url(self, redirect_uri, scope):
@@ -74,17 +76,42 @@ class Client(object):
         return self._request('DELETE', endpoint, **kwargs)
 
     def _request(self, method, endpoint, headers=None, params=None, **kwargs):
-        _headers = {}
-        if 'hapikey' not in params:
-            _headers['Authorization'] = 'Bearer {0}'.format(self.access_token)
+        _headers = {'Authorization': 'Bearer {0}'.format(self.access_token)}
+        if params and 'hapikey' in params:
+            del _headers['Authorization']
         if headers:
             _headers.update(headers)
         return self._parse(requests.request(method, self.BASE_URL + endpoint, headers=_headers, params=params, **kwargs))
 
     def _parse(self, response):
-        if 'application/json' in response.headers['Content-Type']:
+        if 'Content-Type' in response.headers and 'application/json' in response.headers['Content-Type']:
             r = response.json()
         else:
             return response.text
+
+        if not response.ok:
+            code = response.status_code
+            message = r.get('message', None)
+            try:
+                error_enum = ErrorEnum(code)
+            except Exception:
+                raise exceptions.UnexpectedError('Error {0}. Message {1}'.format(code, message))
+
+            if error_enum == ErrorEnum.Unauthorized:
+                raise exceptions.UnauthorizedError(message)
+            elif error_enum == ErrorEnum.Forbidden:
+                raise exceptions.ForbiddenError(message)
+            elif error_enum == ErrorEnum.TooManyRequests:
+                raise exceptions.TooManyRequestsError(message)
+            elif error_enum == ErrorEnum.Timeout1:
+                raise exceptions.TimeoutError(message)
+            elif error_enum == ErrorEnum.Timeout2:
+                raise exceptions.TimeoutError(message)
+            elif error_enum == ErrorEnum.NotFound:
+                raise exceptions.NotFoundError(message)
+            elif error_enum == ErrorEnum.MethodNotAllowed:
+                raise exceptions.MethodNotAllowedError(message)
+            else:
+                raise exceptions.BaseError('Error {0}. Message {1}'.format(code, message))
 
         return r

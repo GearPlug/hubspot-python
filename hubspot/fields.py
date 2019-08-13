@@ -1,4 +1,4 @@
-from hubspot import exception
+from hubspot import exceptions
 
 
 class Fields(object):
@@ -11,5 +11,5 @@ class Fields(object):
         if module in ['deals', 'companies', 'contacts']:
             return self._client._get(self.BASE_URL.format(module))
 
-        raise exception.ModuleNotFound(
+        raise exceptions.ModuleNotFoundError(
             'Your must provide "deals", "companies", "contacts" such a module')
