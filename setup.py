@@ -7,9 +7,10 @@ def read(fname):
 
 
 setup(name='hubspot-python',
-      version='0.1.0',
+      version='0.1.1',
       description='HubSpot API written in python',
       long_description=read('README.md'),
+      long_description_content_type="text/markdown",
       author='Lelia Rubiano',
       author_email='lrubiano5@gmail.com',
       url='https://github.com/GearPlug/hubspot-python.git',
@@ -19,5 +20,5 @@ setup(name='hubspot-python',
       ],
       keywords=['hubspot', 'crm'],
       zip_safe=False,
-      license='GPL',
+      license='MIT',
      )

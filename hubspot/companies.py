@@ -15,7 +15,7 @@ class Companies(object):
         return self._client._post(self.BASE_URL + endpoint, json=data)
 
     def delete_company(self, company_id):
-        endpoint = "/companies/{0}".format(company_id)
+        endpoint = "/companies/{}".format(company_id)
         return self._client._delete(self.BASE_URL + endpoint)
 
     def get_recently_created_companies(self, **params):
@@ -23,5 +23,5 @@ class Companies(object):
         return self._client._get(self.BASE_URL + endpoint, params=params)
 
     def get_company(self, company_id, **params):
-        endpoint = "/companies/{0}".format(company_id)
+        endpoint = "/companies/{}".format(company_id)
         return self._client._get(self.BASE_URL + endpoint, params=params)

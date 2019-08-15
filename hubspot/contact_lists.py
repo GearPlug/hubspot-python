@@ -13,7 +13,7 @@ class ContactLists(object):
         return self._client._post(self.BASE_URL + endpoint, json=data)
 
     def delete_contact_list(self, contact_list_id):
-        endpoint = "/lists/{0}".format(contact_list_id)
+        endpoint = "/lists/{}".format(contact_list_id)
         return self._client._delete(self.BASE_URL + endpoint)
 
     def get_recently_added_contacts_in_a_list(self, **params):
@@ -21,5 +21,9 @@ class ContactLists(object):
         return self._client._get(self.BASE_URL + endpoint, params=params)
 
     def get_contact_list(self, contact_list_id, **params):
-        endpoint = "/lists/{0}".format(contact_list_id)
+        endpoint = "/lists/{}".format(contact_list_id)
         return self._client._get(self.BASE_URL + endpoint, params=params)
+
+    def add_contact_to_list(self, contact_list_id, data):
+        endpoint = "/lists/{}/add".format(contact_list_id)
+        return self._client._post(self.BASE_URL + endpoint, json=data)

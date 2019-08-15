@@ -2,13 +2,15 @@ import requests
 
 from hubspot import exceptions
 from hubspot.enums import ErrorEnum
+from hubspot.calendar import Calendar
+from hubspot.companies import Companies
 from hubspot.contact_lists import ContactLists
 from hubspot.contacts import Contacts
-from hubspot.companies import Companies
 from hubspot.deals import Deals
 from hubspot.fields import Fields
 from hubspot.integrations import Integrations
 from hubspot.webhooks import Webhooks
+from hubspot.workflows import Workflows
 from urllib.parse import urlencode, urlparse
 
 
@@ -22,13 +24,15 @@ class Client(object):
         self.client_secret = client_secret
         self.access_token = None
 
-        self.deals = Deals(self)
+        self.calendar = Calendar(self)
         self.companies = Companies(self)
         self.contact_lists = ContactLists(self)
         self.contacts = Contacts(self)
+        self.deals = Deals(self)
         self.fields = Fields(self)
         self.integrations = Integrations(self)
         self.webhooks = Webhooks(self)
+        self.workflows = Workflows(self)
 
     def authorization_url(self, redirect_uri, scope):
         if not isinstance(scope, list):
@@ -76,7 +80,7 @@ class Client(object):
         return self._request('DELETE', endpoint, **kwargs)
 
     def _request(self, method, endpoint, headers=None, params=None, **kwargs):
-        _headers = {'Authorization': 'Bearer {0}'.format(self.access_token)}
+        _headers = {'Authorization': 'Bearer {}'.format(self.access_token)}
         if params and 'hapikey' in params:
             del _headers['Authorization']
         if headers:
@@ -95,7 +99,7 @@ class Client(object):
             try:
                 error_enum = ErrorEnum(code)
             except Exception:
-                raise exceptions.UnexpectedError('Error {0}. Message {1}'.format(code, message))
+                raise exceptions.UnexpectedError('{}'.format(message))
 
             if error_enum == ErrorEnum.Unauthorized:
                 raise exceptions.UnauthorizedError(message)
@@ -112,6 +116,6 @@ class Client(object):
             elif error_enum == ErrorEnum.MethodNotAllowed:
                 raise exceptions.MethodNotAllowedError(message)
             else:
-                raise exceptions.BaseError('Error {0}. Message {1}'.format(code, message))
+                raise exceptions.BaseError('{}'.format(message))
 
         return r

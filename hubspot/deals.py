@@ -15,7 +15,7 @@ class Deals(object):
         return self._client._post(self.BASE_URL + endpoint, json=data)
 
     def delete_deal(self, deal_id):
-        endpoint = "/deal/{0}".format(deal_id)
+        endpoint = "/deal/{}".format(deal_id)
         return self._client._delete(self.BASE_URL + endpoint)
 
     def get_recently_created_deals(self, **params):
@@ -23,5 +23,5 @@ class Deals(object):
         return self._client._get(self.BASE_URL + endpoint, params=params)
 
     def get_deal(self, deal_id, **params):
-        endpoint = "/deal/{0}".format(deal_id)
+        endpoint = "/deal/{}".format(deal_id)
         return self._client._get(self.BASE_URL + endpoint, params=params)

@@ -15,7 +15,7 @@ class Contacts(object):
         return self._client._post(self.BASE_URL + endpoint, json=data)
 
     def delete_contact(self, contact_id):
-        endpoint = "/contact/vid/{0}".format(contact_id)
+        endpoint = "/contact/vid/{}".format(contact_id)
         return self._client._delete(self.BASE_URL + endpoint)
 
     def get_recently_created_contacts(self, **params):
@@ -23,5 +23,5 @@ class Contacts(object):
         return self._client._get(self.BASE_URL + endpoint, params=params)
 
     def get_contact(self, contact_id, **params):
-        endpoint = "/contact/vid/{0}/profile".format(contact_id)
+        endpoint = "/contact/vid/{}/profile".format(contact_id)
         return self._client._get(self.BASE_URL + endpoint, params=params)
