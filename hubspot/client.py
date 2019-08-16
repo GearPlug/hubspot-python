@@ -91,7 +91,7 @@ class Client(object):
         if 'Content-Type' in response.headers and 'application/json' in response.headers['Content-Type']:
             r = response.json()
         else:
-            return response.text
+            r = response
 
         if not response.ok:
             code = response.status_code
