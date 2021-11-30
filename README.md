@@ -21,24 +21,6 @@ from hubspot.client import Client
 client = Client(APP_ID, HAPIKEY, CLIENT_ID, CLIENT_SECRET)
 ```
 
-### Calendar
-#### Create a new calendar task
-```
-data = {
-  "eventDate": 1425760557000,
-  "category": "BLOG_POST",
-  "state": "TODO",
-  "campaignGuid": "f43fe9fd-4082-4a45-93d8-cb8a88f01654",
-  "name": "Test Blog Task With topics 3",
-  "description": "Cool Post with Topics",
-  "ownerId": 13316,
-  "topicIds": [
-    330075656
-  ],
-  "contentGroupId": 343029322
-}
-response = client.calendar.create_task(data)
-```
 ### Companies
 #### Get all companies
 ```

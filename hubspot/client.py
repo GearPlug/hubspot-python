@@ -2,7 +2,6 @@ import requests
 
 from hubspot import exceptions
 from hubspot.enums import ErrorEnum
-from hubspot.calendar import Calendar
 from hubspot.companies import Companies
 from hubspot.contact_lists import ContactLists
 from hubspot.contacts import Contacts
@@ -24,7 +23,6 @@ class Client(object):
         self.client_secret = client_secret
         self.access_token = None
 
-        self.calendar = Calendar(self)
         self.companies = Companies(self)
         self.contact_lists = ContactLists(self)
         self.contacts = Contacts(self)
