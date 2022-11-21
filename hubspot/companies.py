@@ -9,8 +9,8 @@ class Companies(object):
         Used to get all of the companies in a account. Returns a paginated
         list of companies.
 
-        The paging cursor token of the last successfully read resource will 
-        be returned as the paging.next.after JSON property of a paged response 
+        The paging cursor token of the last successfully read resource will
+        be returned as the paging.next.after JSON property of a paged response
         containing more results.
         """
         return self._client._get(self.BASE_URL, params=params)

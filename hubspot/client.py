@@ -34,70 +34,69 @@ class Client(object):
 
     def authorization_url(self, redirect_uri, scope):
         if not isinstance(scope, list):
-            raise Exception('scope must be a list.')
-        params = {
-            'client_id': self.client_id,
-            'redirect_uri': redirect_uri,
-            'scope': ' '.join(scope)
-        }
-        url = 'https://app.hubspot.com/oauth/authorize?' + urlencode(params)
+            raise Exception("scope must be a list.")
+        params = {"client_id": self.client_id, "redirect_uri": redirect_uri, "scope": " ".join(scope)}
+        url = "https://app.hubspot.com/oauth/authorize?" + urlencode(params)
         return url
 
     def exchange_code(self, redirect_uri, code):
         data = {
-            'grant_type': 'authorization_code',
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'redirect_uri': redirect_uri,
-            'code': code
+            "grant_type": "authorization_code",
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "redirect_uri": redirect_uri,
+            "code": code,
         }
-        return self._post('oauth/v1/token', data=data)
+        return self._post("oauth/v1/token", data=data)
 
     def refresh_token(self, refresh_token):
         data = {
-            'grant_type': 'refresh_token',
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'refresh_token': refresh_token
+            "grant_type": "refresh_token",
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "refresh_token": refresh_token,
         }
-        return self._post('oauth/v1/token', data=data)
+        return self._post("oauth/v1/token", data=data)
 
     def set_access_token(self, access_token):
         self.access_token = access_token
 
     def _get(self, endpoint, **kwargs):
-        return self._request('GET', endpoint, **kwargs)
+        return self._request("GET", endpoint, **kwargs)
 
     def _post(self, endpoint, **kwargs):
-        return self._request('POST', endpoint, **kwargs)
+        return self._request("POST", endpoint, **kwargs)
 
     def _put(self, endpoint, **kwargs):
-        return self._request('PUT', endpoint, **kwargs)
+        return self._request("PUT", endpoint, **kwargs)
 
     def _delete(self, endpoint, **kwargs):
-        return self._request('DELETE', endpoint, **kwargs)
+        return self._request("DELETE", endpoint, **kwargs)
 
     def _request(self, method, endpoint, headers=None, params=None, **kwargs):
-        _headers = {'Authorization': 'Bearer {}'.format(self.access_token)}
-        if params and 'hapikey' in params:
-            del _headers['Authorization']
+        _headers = {"Authorization": "Bearer {}".format(self.access_token)}
+        if params and "hapikey" in params:
+            del _headers["Authorization"]
         if headers:
             _headers.update(headers)
-        return self._parse(requests.request(method, self.BASE_URL + endpoint, headers=_headers, params=params, **kwargs))
+        return self._parse(
+            requests.request(method, self.BASE_URL + endpoint, headers=_headers, params=params, **kwargs)
+        )
 
     def _parse(self, response):
-        if 'Content-Type' in response.headers and 'application/json' in response.headers['Content-Type']:
+        print(response.request.url)
+        if "Content-Type" in response.headers and "application/json" in response.headers["Content-Type"]:
             r = response.json()
         else:
             r = response
 
         if not response.ok:
             code = response.status_code
-            message = r.get('message', None)
+            message = r.get("message", None)
             try:
                 error_enum = ErrorEnum(code)
             except Exception:
-                raise exceptions.UnexpectedError('{}'.format(message))
+                raise exceptions.UnexpectedError("{}".format(message))
 
             if error_enum == ErrorEnum.Unauthorized:
                 raise exceptions.UnauthorizedError(message)
@@ -114,6 +113,6 @@ class Client(object):
             elif error_enum == ErrorEnum.MethodNotAllowed:
                 raise exceptions.MethodNotAllowedError(message)
             else:
-                raise exceptions.BaseError('{}'.format(message))
+                raise exceptions.BaseError("{}".format(message))
 
         return r

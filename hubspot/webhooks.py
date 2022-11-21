@@ -21,11 +21,9 @@ class Webhooks(object):
         return self._client._post(self.BASE_URL + endpoint, json=data, params={"hapikey": self._client.hapikey})
 
     def update_subscription(self, subscription_id, data):
-        endpoint = "/{}/subscriptions/{}".format(
-            self._client.app_id, subscription_id)
+        endpoint = "/{}/subscriptions/{}".format(self._client.app_id, subscription_id)
         return self._client._post(self.BASE_URL + endpoint, json=data, params={"hapikey": self._client.hapikey})
 
     def delete_subscription(self, subscription_id):
-        endpoint = "/{}/subscriptions/{}".format(
-            self._client.app_id, subscription_id)
+        endpoint = "/{}/subscriptions/{}".format(self._client.app_id, subscription_id)
         return self._client._delete(self.BASE_URL + endpoint, params={"hapikey": self._client.hapikey})
